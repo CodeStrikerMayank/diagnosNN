@@ -24,7 +24,7 @@ class extract_csv_data :
         
         self.X = self.data[feature_cols].to_numpy() 
         self.data["diagnosis"] =  self.data["diagnosis"].replace({"benign" :1, "malignant" : 0})
-        self.Y = self.data[["diagnosis"]].to_numpy()
+        self.Y = self.data[["diagnosis"]].to_numpy(dtype=bool)
     #standard di
     def normalisation_data(self):
         U = np.mean(self.X,axis=0,keepdims=True)
@@ -50,6 +50,9 @@ class NeuralNetwork(extract_csv_data):
     def sigmoid(z):
         return 1/(1+(np.exp(-np.clip(z,-500,500))))
 
+    def save_info(self):
+        np.savez("checkpoints.npz",w1=self.w1,w2=self.w2,w3=self.w3,w4=self.w4,w5=self.w5)
+    
     def nerual_structure(self):
         np.random.seed(43)
         self.w1 = np.random.randn(30,20) * np.sqrt(2/2)
@@ -68,23 +71,24 @@ class NeuralNetwork(extract_csv_data):
         self.b5 = np.zeros((1,1))
 
     def forward(self):
-        self.nerual_structure()
         self.z1  = np.dot(self.x_dd,self.w1)+self.b1 
-        a1  = self.relu(self.z1)
+        self.a1  = self.relu(self.z1)
 
-        self.z2 = np.dot(a1,self.w2)+self.b2 
-        a2 = self.relu(self.z2)
+        self.z2 = np.dot(self.a1,self.w2)+self.b2 
+        self.a2 = self.relu(self.z2)
 
-        self.z3 = np.dot(a2,self.w3)+self.b3 
-        a3 = self.relu(self.z3)
+        self.z3 = np.dot(self.a2,self.w3)+self.b3 
+        self.a3 = self.relu(self.z3)
 
-        self.z4 = np.dot(a3,self.w4)+self.b4
-        a4 = self.relu(self.z4) 
+        self.z4 = np.dot(self.a3,self.w4)+self.b4
+        self.a4 = self.relu(self.z4) 
 
-        self.z5 = np.dot(a4,self.w5)+self.b5
+        self.z5 = np.dot(self.a4,self.w5)+self.b5
         self.a5 = self.sigmoid(self.z5)
 
     def back_propogation(self):
+        self.nerual_structure()
+
         echoues = 10000
         lrt = 0.01 
         m = len(self.x_dd)
@@ -96,7 +100,7 @@ class NeuralNetwork(extract_csv_data):
 
             binary_loss = -(self.Y*(np.log(a5_loss))+(1-self.Y)*(np.log(1-a5_loss)))
 
-            dz5 = self.Y - self.a5
+            dz5 = self.a5-self.Y
             da5 = (1/m)*np.dot(self.a4.T,dz5)
             db5 = (1/m)*np.sum(dz5,axis=0,keepdims=True)
 
@@ -104,12 +108,32 @@ class NeuralNetwork(extract_csv_data):
             da4 = (1/m)*np.dot(self.a3.T,dz4)
             db4 = (1/m)*np.sum(dz4,axis=0,keepdims=True)
 
-            dz3 = np.dot(dz4,self.w4.T).self.relu_derivative(self.z3)
+            dz3 = np.dot(dz4,self.w4.T)*self.relu_derivative(self.z3)
             da3 = (1/m)*np.dot(self.a2.T,dz3)
             db3 = (1/m)*np.sum(dz3,axis=0,keepdims=True)
 
-            dz2 = np.dot()
+            dz2 = np.dot(dz3,self.w3.T)*self.relu_derivative(self.z2)
+            da2 = (1/m)*np.dot(self.a1.T,dz2)
+            db2 = (1/m)*np.sum(dz2,axis=0,keepdims=True)
 
+            dz1 = np.dot(dz2,self.w2.T)* self.relu_derivative(self.z1)
+            da1 = (1/m)*np.dot(self.x_dd.T,dz1)
+            db1 = (1/m)*np.sum(dz1,axis=0,keepdims=True)
 
+            self.w5 -= lrt*da5
+            self.b5 -= lrt*db5 
+
+            self.w4 -= lrt*da4 
+            self.b4 -= lrt* db4
+
+            self.w3 -= lrt * da3 
+            self.b3 -= lrt * db3
+
+            self.w2 -= lrt*da2 
+            self.b2 -= lrt * db2 
+
+            self.w1 -= lrt * da1 
+            self.b1 -= lrt * db1 
+        self.save_info()
 k1 = NeuralNetwork()
 k1.back_propogation()
