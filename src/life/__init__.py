@@ -40,7 +40,7 @@ class NeuralNetwork(extract_csv_data):
     """Basic calcualtion logics"""
     @staticmethod
     def relu(z): 
-        return np.m(z*0.01,z)
+        return np.maximum(z*0.01,z)
 
     @staticmethod
     def relu_derivative(z):
@@ -50,10 +50,30 @@ class NeuralNetwork(extract_csv_data):
     def sigmoid(z):
         return 1/(1+(np.exp(-np.clip(z,-500,500))))
 
-    def forward(self):
+    def nerual_structure(self):
+        np.random.seed(43)
+        self.w1 = np.random.randn(30,20) * np.sqrt(2/2)
+        self.b1 = np.zeros((1,20))
 
-        print(self.x_dd.shape)
-        
+        self.w2 = np.random.randn(20,15) * np.sqrt(2/4)
+        self.b2 = np.zeros((1,15))
+
+        self.w3 =np.random.randn(15,9) * np.sqrt(2/4)
+        self.b3 = np.zeros((1,9))
+
+        self.w4 = np.random.randn(9,4) * np.sqrt(2/4)
+        self.b4 = np.zeros((1,4))
+
+        self.w5 = np.random.randn(4,1) * np.sqrt(2/4)
+        self.b5 = np.zeros((1,1))
+
+    def forward(self):
+        self.nerual_structure()
+        z1  = np.dot(self.x_dd,self.w1)+self.b1 
+        a1  = self.relu(z1)
+        print(a1)
+
+
 k1 = NeuralNetwork()
 k1.forward()
 
