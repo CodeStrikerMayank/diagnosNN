@@ -71,7 +71,10 @@ class NeuralNetwork(extract_csv_data):
         self.nerual_structure()
         z1  = np.dot(self.x_dd,self.w1)+self.b1 
         a1  = self.relu(z1)
-        print(a1)
+
+        z2 = np.dot(a1,self.w2)+self.b2 
+        a2 = self.relu(z2)
+        print(a2)
 
 
 k1 = NeuralNetwork()
