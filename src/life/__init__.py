@@ -23,6 +23,14 @@ class extract_csv_data :
         
         self.X = self.data[feature_cols].to_numpy() 
         self.data["diagnosis"] =  self.data["diagnosis"].replace({"benign" :1, "malignant" : 0})
-        return self.data["diagnosis"]
+        self.Y = self.data[["diagnosis"]].to_numpy()
+
+    def normalisation_data(self):
+        U = np.mean(self.X,axis=0,keepdims=True)
+        sigma = np.std(self.X,axis=0,keepdims=True)
+        self.x_dd = (self.X-U)/(sigma+ 1e-8)
+
+        
 p1 = extract_csv_data()
 print(p1.data_extraction())
+p1.normalisation_data()
