@@ -51,7 +51,9 @@ class NeuralNetwork(extract_csv_data):
         return 1/(1+(np.exp(-np.clip(z,-500,500))))
 
     def save_info(self):
-        np.savez("checkpoints.npz",w1=self.w1,w2=self.w2,w3=self.w3,w4=self.w4,w5=self.w5)
+        np.savez("checkpoints.npz",
+        w1=self.w1,w2=self.w2,w3=self.w3,w4=self.w4,w5=self.w5
+        b1 = self.b1,b2=self.b2,b3=self.b3,b4=self.b4,b5=self.b5)
     
     def nerual_structure(self):
         np.random.seed(43)
