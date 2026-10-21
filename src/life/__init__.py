@@ -69,14 +69,47 @@ class NeuralNetwork(extract_csv_data):
 
     def forward(self):
         self.nerual_structure()
-        z1  = np.dot(self.x_dd,self.w1)+self.b1 
-        a1  = self.relu(z1)
+        self.z1  = np.dot(self.x_dd,self.w1)+self.b1 
+        a1  = self.relu(self.z1)
 
-        z2 = np.dot(a1,self.w2)+self.b2 
-        a2 = self.relu(z2)
-        print(a2)
+        self.z2 = np.dot(a1,self.w2)+self.b2 
+        a2 = self.relu(self.z2)
+
+        self.z3 = np.dot(a2,self.w3)+self.b3 
+        a3 = self.relu(self.z3)
+
+        self.z4 = np.dot(a3,self.w4)+self.b4
+        a4 = self.relu(self.z4) 
+
+        self.z5 = np.dot(a4,self.w5)+self.b5
+        self.a5 = self.sigmoid(self.z5)
+
+    def back_propogation(self):
+        echoues = 10000
+        lrt = 0.01 
+        m = len(self.x_dd)
+        for i in range(echoues):
+            self.forward()
+            """we wil use binary  cross entropy to calulcate loss """
+            ecspilion  = 1e-15 
+            a5_loss = np.clip(self.a5,ecspilion,1-ecspilion)
+
+            binary_loss = -(self.Y*(np.log(a5_loss))+(1-self.Y)*(np.log(1-a5_loss)))
+
+            dz5 = self.Y - self.a5
+            da5 = (1/m)*np.dot(self.a4.T,dz5)
+            db5 = (1/m)*np.sum(dz5,axis=0,keepdims=True)
+
+            dz4 = np.dot(dz5,self.w5.T)*self.relu_derivative(self.z4)
+            da4 = (1/m)*np.dot(self.a3.T,dz4)
+            db4 = (1/m)*np.sum(dz4,axis=0,keepdims=True)
+
+            dz3 = np.dot(dz4,self.w4.T).self.relu_derivative(self.z3)
+            da3 = (1/m)*np.dot(self.a2.T,dz3)
+            db3 = (1/m)*np.sum(dz3,axis=0,keepdims=True)
+
+            dz2 = np.dot()
 
 
 k1 = NeuralNetwork()
-k1.forward()
-
+k1.back_propogation()
