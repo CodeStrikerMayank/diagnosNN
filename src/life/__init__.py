@@ -30,14 +30,30 @@ class extract_csv_data :
         U = np.mean(self.X,axis=0,keepdims=True)
         sigma = np.std(self.X,axis=0,keepdims=True)
         self.x_dd = (self.X-U)/(sigma+ 1e-8)
-
 class NeuralNetwork(extract_csv_data):
 
-    def __init_(self):
-        super().__init_subclass__()
+    def __init__(self):
+        super().__init__()
+        
+        self.data_extraction()
+        self.normalisation_data()
+    """Basic calcualtion logics"""
+    @staticmethod
+    def relu(z): 
+        return np.m(z*0.01,z)
 
+    @staticmethod
+    def relu_derivative(z):
+        return np.where(z > 0,1.0,0.01)
 
-p1 = NeuralNetwork()
+    @staticmethod
+    def sigmoid(z):
+        return 1/(1+(np.exp(-np.clip(z,-500,500))))
 
+    def forward(self):
 
+        print(self.x_dd.shape)
+        
+k1 = NeuralNetwork()
+k1.forward()
 
