@@ -25,3 +25,6 @@ def bce(z,z_pre):
     escpilion = 1e-15
     z2 = np.clip(z_pre,escpilion,1-escpilion)
     return -np.mean(z*(np.log(z2)+((1-z)*(np.log(1-z2)))))
+
+def porcess(x_train,y_train,x_vald,y_vald,y_test,x_test):
+    
