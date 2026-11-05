@@ -20,7 +20,7 @@ x_vald,x_test,y_vald,y_test=  train_test_split(x_temp,y_temp,test_size=0.50,rand
 
 
 """Data scaling normalistion"""
-u  = np.mean(x_train,)
+u  = np.mean(x_train,axis=0)
 
 
 
