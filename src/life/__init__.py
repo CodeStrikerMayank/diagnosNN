@@ -1,6 +1,7 @@
 lazy import numpy as np 
 lazy import pandas as pd 
 lazy from sklearn.model_selection import train_test_split 
+
 feature_cols = [
     'mean radius', 'mean texture', 'mean perimeter', 'mean area',
     'mean smoothness', 'mean compactness', 'mean concavity',
@@ -12,9 +13,11 @@ feature_cols = [
     'worst smoothness', 'worst compactness', 'worst concavity',
     'worst concave points', 'worst symmetry', 'worst fractal dimension'
 ]   
+
 data = pd.read_csv(r"D:\Library3\Machine Larning\Life\neural_network_practice_dataset.csv")
+data = data.dropna()
 X = data[feature_cols].to_numpy(dtype=float)
-Y = data["diagnosis"].replace({"malignant":0,"benign":1})
+Y = data["diagnosis"].map({"malignant":0,"benign":1})
 x_train,x_temp,y_train,y_temp = train_test_split(X,Y,test_size=0.30,random_state=42,shuffle=True)
 x_vald,x_test,y_vald,y_test=  train_test_split(x_temp,y_temp,test_size=0.50,random_state=42,shuffle=True)
 
@@ -25,8 +28,7 @@ s = np.std(x_train,axis=0)
 
 x_train = (x_train-u)/(s+1e-8)
 x_vald = (x_vald-u)/(s+1e-8)
-
-
+x_test = (x_test - u) / (s + 1e-8)
 
 def relu(z):return np.maximum(z*0.01,z)
 def sigmoid(z): return 1/(1+(np.exp(-np.clip(z,-500,500))))
@@ -39,16 +41,16 @@ print(f"{x_train.shape}{y_train.shape}")
 def porcess(x_train,y_train,x_vald,y_vald,y_test,x_test):
     """Data initilisation here by in T -90"""
     np.random.seed(46)
-    w1= np.random.randn(30,8)
+    w1= np.random.randn(30,8)*np.sqrt(2/4)
     b1 = np.zeros((1,8))
 
-    w2 = np.random.randn(8,6)
+    w2 = np.random.randn(8,6)*np.sqrt(2/4)
     b2 = np.zeros((1,6))
 
-    w3 = np.random.randn(6,4)
+    w3 = np.random.randn(6,4)*np.sqrt(2/4)
     b3 = np.zeros((1,4))
 
-    w4 = np.random.randn(4,1)
+    w4 = np.random.randn(4,1)*np.sqrt(2/4)
     b4 = np.zeros((1,1))
 
     epochs = 10000
@@ -64,7 +66,7 @@ def porcess(x_train,y_train,x_vald,y_vald,y_test,x_test):
         a3 = relu(z3) 
 
         z4 = np.dot(a3,w4)+b4  
-        a4 = sigmoid(z4) 
+        a4 = sigmoid(z4)
 
     print(a4)
 
