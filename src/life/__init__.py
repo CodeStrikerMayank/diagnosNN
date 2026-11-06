@@ -37,7 +37,7 @@ def bce(z,z_pre):
     escpilion = 1e-15
     z2 = np.clip(z_pre,escpilion,1-escpilion)
     return -np.mean(z*(np.log(z2)+((1-z)*(np.log(1-z2)))))
-print(f"{x_train.shape}{y_train.shape}")
+
 def porcess(x_train,y_train,x_vald,y_vald,y_test,x_test):
     """Data initilisation here by in T -90"""
     np.random.seed(46)
@@ -55,6 +55,7 @@ def porcess(x_train,y_train,x_vald,y_vald,y_test,x_test):
 
     epochs = 10000
     lrt = 0.05
+    m = len(x_train)
     for epoch in range(epochs):
         z1 = np.dot(x_train,w1)+b1
         a1 = relu(z1)
@@ -68,6 +69,29 @@ def porcess(x_train,y_train,x_vald,y_vald,y_test,x_test):
         z4 = np.dot(a3,w4)+b4  
         a4 = sigmoid(z4)
 
-    print(a4)
+        # backpropogation 
+        dz4 = (a4-y_train)
+        dw4 = (1/m)*np.dot(a3.T,dz4) 
+        db4 = (1/m)*np.sum(dz4,axis=0,keepdims=True)
+
+        dz3 = np.dot(dz4,w4.T)*relu_der(z3)
+        dw3 = (1/m)*np.dot(a2.T,dz3)
+        db3 = (1/m)*np.sum(dz3,axis=0,keepdims=True)
+
+        dz2 = np.dot(dz3,w3.T)*relu_der(z2)
+        dw2 = (1/m)*np.dot(a1.T,dz2)
+        db2= (1/m)*np.sum(dz2,axis=0,keepdims=True)
+
+        dz1 = np.dot(dz2,w2.T)*relu(z1)
+        dw1 = (1/m)*np.dot(x_train.T,a1)
+        db1 = (1/m)*np.sum(dz1,axis=0,keepdims=True)
+        b1 -= lrt*dw1 
+        w1 -= lrt*dw1 
+        b2 -= lrt*db2
+        w2 -= lrt*dw2 
+        b3 -= lrt*db3  
+        w3 -= lrt*dw3 
+        b4 -= lrt * db4      
+        w4 -= lrt*dw4             
 
 porcess(x_train,y_train,x_vald,y_vald,y_test,x_test)
